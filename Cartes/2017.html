@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <head>
+        <title>Leaflet Menu for Button</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"></link>
+        <link rel="stylesheet" href="../lib/leaflet/leaflet.css"></link>
+        <link rel="stylesheet" href="../src/leaflet.menu.min.css"></link>
+        <link rel="stylesheet" href="../lib/easybutton/easy-button.css"></link>
+        <link rel="stylesheet" href="../src/leaflet.menu.css"></link>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="../lib/leaflet/leaflet.js"></script>
+        <script src="../lib/easybutton/easy-button.js"></script>
+        <script src="../src/leaflet.menu.min.js"></script>
+    
+<style>
+    #map {
+            width: 700px;
+            height: 600px;
+        }
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius:5px;
+        }
+        .info h4 {
+             margin: 0 0 8px;
+            color: #2c7fb8;
+            font-family :' fantasy';
+            font-size : 20px;
+        }
+         .info
+  {
+        padding: 6px 8px;
+        font: 13px/16px Verdana, Geneva, sans-serif;
+        background: white;
+        background: rgba(255,255,255,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 10px;
+    }
+</style>
+    </head>
+    <body>
+       
+        <div id="map" style="position: absolute;width: 100%; height: 100%;"></div>
+         <script src="NA.js" type="text/javascript"></script>
+    <script>
+
+       var openstreetAttr = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+            osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{attribution}';
+        var markersGroup = new L.FeatureGroup();
+
+        var map = L.map('map', {
+            center: [-7.220304879115198, 33.992403017832274],
+            zoom: 15,
+            zoomControl: false,
+        });
+        var openstreetmap = L.tileLayer(osmUrl,{attribution: openstreetAttr}).addTo(map);
+        
+        function Monstyle(feature) {
+        return {
+            weight: 2,
+            opacity: 10,
+            color: 'Blue',
+            dashArray: '3',
+            fillOpacity: 0.7,
+            fillColor: '#c6dbef'
+        };
+    }
+
+    function highlightFeature(e) {
+        var layer = e.target;
+
+        layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+            info.update(layer.feature.properties);
+
+    }
+
+    function resetHighlight(e) {
+        geojson.resetStyle(e.target);
+            info.update();
+
+    }
+    function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+}
+    function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+    function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+};
+
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Anomalies de précipitaions en Afrique du Nord [2016-2020]</h4>' +  (props ?
+        'Pays : <b>' + props.NAME + '</b> <br />  Anomalie de précipitations enregistrée en 2017 :' + props.AP2016 +'mm'
+        : 'Merci de sélectionner le pays ');
+};
+
+info.addTo(map);
+
+    var geojson = L.geoJson(NA, {
+        style: Monstyle,
+        onEachFeature: onEachFeature,
+}).addTo(map);
+
+L.Control.Watermark = L.Control.extend({
+    onAdd: function(map) {
+        var img = L.DomUtil.create('img');
+
+        img.src = 'LOGO.png';
+        img.style.width = '180px'
+
+
+        return img;
+    },
+
+    onRemove: function(map) {
+        // Nothing to do here
+    }
+});
+
+L.control.watermark = function(opts) {
+    return new L.Control.Watermark(opts);
+}
+
+L.control.watermark({ position: 'bottomleft' }).addTo(map);
+ L.control.zoom({position : 'bottomright'}).addTo(map);
+
+var home_button = L.easyButton({
+            states:[{
+                stateName: 'set-view-to-newest',
+                icon : "fa fa-home",
+                title: 'Home',
+                onClick: function (btn, map) {
+                    map.setView([-7.220304879115198, 33.992403017832274], 13, {animate: false});
+                }
+            }],
+            id: 'set-view-to-newest'
+        });
+        home_button.addTo(map);
+
+        var menu = L.leafletMenu(map, {
+                        items: {
+                    2020: {
+                        href: '2020.HTML',
+                    },
+                    2019: {
+                        href: '2019.HTML',
+                    },
+                    2018: {
+                        href: '2018.HTML',
+                    },
+                    2017: {
+                        href: '2017.HTML',
+                    },
+                    2016: {
+                        href: '2016.HTML',
+                    }
+                }
+        });
+        var menuButton = L.easyButton({
+            states: [{
+                stateName: 'show-menu',
+                icon: 'fa fa-tasks',
+                title: 'Dates',
+                onClick: function (btn, map) {
+                    menu.options.button = btn;
+                    menu.show();
+                    btn.state('hide-menu');
+                }
+            },{
+                stateName: 'hide-menu',
+                icon: 'fa fa-tasks',
+                title: 'Hide Menu',
+                onClick: function (btn, map) {
+                    menu.hide();
+                    btn.state('show-menu');
+                }
+            }],
+            id: 'styles-menu',
+        });
+        menuButton.addTo(map);        
+
+        </script>
+    </body>
+</html>

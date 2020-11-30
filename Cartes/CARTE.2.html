@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Déforéstation et Incendies - Afrique du nord</title>
+
+
+<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+	<link rel="stylesheet" href="leaflet.css" />
+	<script src="leaflet.js"></script>
+	<script src="SelectLayers.js"></script>
+	<link rel="stylesheet" href="leaflet.legend.css" />
+    <script type="text/javascript" src="leaflet.legend.js"></script>
+
+	<style>
+		#map {
+			width: 1300px;
+			height: 600px;
+		}
+		.info {
+		    padding: 6px 8px;
+		    font: 14px/16px Arial, Helvetica, sans-serif;
+		    background: white;
+		    background: rgba(255,255,255,0.8);
+		    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+		    border-radius:5px;
+		}
+		.info h4 {
+		     margin: 0 0 8px;
+		    color: #cc861e;
+		    font-family :' fantasy';
+		    font-size : 20px;
+		}
+		 .info
+  {
+        padding: 6px 8px;
+        font: 13px/16px Verdana, Geneva, sans-serif;
+        background: white;
+        background: rgba(255,255,255,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 10px;
+    }
+
+   .legend {
+        line-height: 19px;
+        padding:7px;
+        color: #555;
+       }
+
+   .legend i {
+        width: 15px;
+        height: 15px;
+        float: left;
+        margin-right: 0px;
+        opacity: 0.7;
+      }
+
+    .circle
+ {
+float: left;
+border: 1px solid #222;
+border-radius: 50%;
+ }
+
+ .legend .colorcircle {
+border-radius: 50%;
+width: 15px;
+height: 15px;
+margin-top: 0px;
+ }
+.legend .circlepadding {
+border-radius: 50%;
+background: "#a08f80";
+
+}
+	</style>
+
+	
+</head>
+<body>
+
+<div id='map' ></div>
+
+<script src="NA.js" type="text/javascript"></script>
+
+<script>
+	 var marker = L.circleMarker(L.latLng(29.702368038541767, 120.47607421874999), {
+        fillColor: "#ff0000",
+        color: "blue",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.6,
+    });
+	var map = L.map('map').setView([ 29.8467811, -8.95316617], 4);
+
+	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	}).addTo(map);
+
+
+	var baseballIcon = L.icon({
+		iconUrl: 'baseball-marker.png',
+		iconSize: [32, 37],
+		iconAnchor: [16, 37],
+		popupAnchor: [0, -28]
+	});
+	function Monstyle(feature) {
+		return {
+			weight: 2,
+			opacity: 10,
+			color: 'Orange',
+			dashArray: '3',
+			fillOpacity: 0.7,
+			fillColor: 'white'
+		};
+	}
+
+	function highlightFeature(e) {
+	    var layer = e.target;
+
+	    layer.setStyle({
+	        weight: 5,
+	        color: '#666',
+	        dashArray: '',
+	        fillOpacity: 0
+	    });
+
+	    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+	        layer.bringToFront();
+	    }
+	        info.update(layer.feature.properties);
+
+	}
+
+	function resetHighlight(e) {
+    	geojson.resetStyle(e.target);
+    	    info.update();
+
+	}
+	function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+}
+	function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+	function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+};
+
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Déforestation et Incendies en Afrique du Nord</h4>' +  (props ?
+        'Pays : <b>' + props.NAME + '</b> <br />  Nombre des Incendies en 2020: ' + props.Nb_Incen +'</b> <br />  Taux de déforéstation: ' + props.Défo + 'ha/an'
+        : '');
+};
+
+info.addTo(map);
+
+	var geojson = L.geoJson(NA, {
+		style: Monstyle,
+	    onEachFeature: onEachFeature,
+}).addTo(map);
+
+L.Control.Watermark = L.Control.extend({
+    onAdd: function(map) {
+        var img = L.DomUtil.create('img');
+
+        img.src = 'LOGO.png';
+        img.style.width = '150px'
+
+
+        return img;
+    },
+
+    onRemove: function(map) {
+        // Nothing to do here
+    }
+});
+
+L.control.watermark = function(opts) {
+    return new L.Control.Watermark(opts);
+}
+
+L.control.watermark({ position: 'bottomleft' }).addTo(map);
+
+L.circle([33.8482428,9.1293408], {radius: 45833 , fillColor: "#d95f0e",color: "#d95f0e",fillOpacity: 5}).addTo(map);
+L.circle([27.8778, 2.906259], {radius: 500000 , fillColor: "#d95f0e",color: "#d95f0e",fillOpacity: 5}).addTo(map);
+L.circle([26.4414044,31.1148571], {radius: 83750 , fillColor: "#d95f0e",color: "#d95f0e",fillOpacity: 5}).addTo(map);
+L.circle([28.059415, 17.027116], {radius: 133749 , fillColor: "#d95f0e",color: "#d95f0e",fillOpacity: 5}).addTo(map);
+L.circle([32.4396525,-5.8954387], {radius: 125000 , fillColor: "#d95f0e",color: "#d95f0e",fillOpacity: 5}).addTo(map);
+  function getRadius(r) {
+//r = Math.sqrt(y / Math.PI)
+//return r;
+return r < 102 ? 15 :
+       r < 50 ? 10 :
+       r < 20 ? 9:
+       r < 10 ? 8 :
+       r < 5 ? 6 :
+       0;
+ }
+
+
+function getRadius(r) {
+return  r > 100 ? 19 :
+        r > 50 ? 12 :
+        r > 20 ? 6 :
+        r > 10 ? 4 :
+        0;
+}
+
+ var legend = L.control({position: 'bottomright'});
+ legend.onAdd = function (map) {
+
+ var div = L.DomUtil.create('div', 'info legend');
+ grades = [15, 40, 80, 400],
+ labels = ['<strong>Légende ( Incendies ) :</strong>'],
+ categories = ['50','100',' 200', '500'];
+
+ for (var i = 0; i < grades.length; i++) {
+        var grade = grades[i];//*0.5;
+   labels.push(
+        '<i class="circlepadding" style="width: '+Math.max(24,(4*getRadius(grade)))+'px;"></i> <i style="background: #d95f0e;fillOpacity: 5;color: #d95f0e; width: '+getRadius(grade)*3+'px; height: '+getRadius(grade)*3+'px; border-radius: 50%; margin-top: '+Math.max(2,(6-getRadius(grade)))+'px;"></i><i class="circlepadding" style="width: '+Math.max(5,(10-5*getRadius(grade)))+'px;"></i> ' + categories[i]);
+   }
+ div.innerHTML = labels.join('<br>');
+ return div;
+ };
+ legend.addTo(map);
+        // //var control = L.control.layers(baseMaps, overlayMaps)
+        // var control = L.control.selectLayers(  overlayMaps)
+        // control.addTo(map);
+
+
+</script>
+
+</body>
+</html>
+
+	
+
+
